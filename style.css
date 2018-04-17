@@ -1,3 +1,15 @@
 body {
   padding: 20px 30px;
 }
+
+.flex-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 350px;
+  margin: 10px 10px;
+  height: 550px;
+}
