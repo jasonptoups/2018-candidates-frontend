@@ -124,7 +124,7 @@ Vue.component('candidate-card', {
   }
 })
 
-Vue.component('modal', {
+Vue.component('more-modal', {
   template: `
   <div class="modal is-active" v-show="showCandidateModal">
   <div class="modal-background"></div>
@@ -181,6 +181,143 @@ Vue.component('modal', {
       this.showCandidateModal = true
       this.candidate = candidate
     })
+  }
+})
+
+Vue.component('edit-modal', {
+  template: `
+  <div class="modal is-active" v-show="showEditModal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">{{this.candidate.name}}</p>
+      <button class="delete" aria-label="close" @click="showEditModal = false"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="card-image">
+        <figure class="image is-4by3">
+          <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+        </figure>
+      </div>
+      <form>
+        <label class="label">Name: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.name">
+        </div>
+        <label class="label">Bio: </label>
+        <div class="control">
+          <textarea class="textarea" v-model="this.candidate.bio"></textarea>
+        </div>
+        <label class="label">Website: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.website">
+        </div>
+        <label class="label">State: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.state">
+        </div>
+        <label class="label">District: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.district">
+        </div>
+        <label class="label">Age: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.age">
+        </div>
+        <label class="label">Gender: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.gender">
+        </div>
+        <label class="label">Sexuality: </label>
+        <div class="control">
+          <input class="input" name="name" type="text" v-model="this.candidate.sexuality">
+        </div>
+        <label class="label">Professions:</label>
+          <div><span>Educator: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Educator"></div>
+          <div><span>Veteran: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Veteran"></div>
+          <div><span>Law: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Law"></div>
+          <div><span>Public Servant: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions['Public Servant']"></div>
+          <div><span>Politician: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Politician"></div>
+          <div><span>Business: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Business"></div>
+          <div><span>Academic: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.Academic"></div>
+          <div><span>STEM: </span><input type="checkbox" id="checkbox" v-model="this.candidate.professions.STEM"></div>
+        <label class="label">Ethnicities:</label>
+          <div><span>White: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities.White"></div>
+          <div><span>Hispanic: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities.Hispanic"></div>
+          <div><span>East Asian: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities['East Asian']"></div>
+          <div><span>South Asian: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities['South Asian']"></div>
+          <div><span>African American: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities['African American']"></div>
+          <div><span>Mixed: </span><input type="checkbox" id="checkbox" v-model="this.candidate.ethnicities.Mixed"></div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" @click="updateCandidate">Save changes</button>
+      <button class="button">Cancel</button>
+      <button class="button is-danger">Delete Candidate</button>
+    </footer>
+  </div>
+  </div>
+  `,
+  data () {
+    return {
+      showEditModal: false,
+      candidate: {},
+      url: 'http://localhost:4000/api/candidates/',
+    }
+  },
+  computed: {
+    apiURL() {
+      return this.url + this.candidate._id
+    }
+  },
+  created () {
+    Event.$on('editCard', candidate => {
+      this.showEditModal = true
+      this.candidate = candidate
+    })
+  },
+  methods: {
+    updateCandidate () {
+      fetch(this.apiURL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.candidate.name,
+          state: this.candidate.state,
+          district: this.candidate.district,
+          age: this.candidate.age,
+          gender: this.candidate.gender,
+          sexuality: this.candidate.sexuality,
+          website: this.candidate.website,
+          bio: this.candidate.bio,
+          professions: {
+            Educator: this.candidate.professions.Educator,
+            Veteran: this.candidate.professions.Veteran,
+            Law: this.candidate.professions.Law,
+            'Public Servant': this.candidate.professions['Public Servant'],
+            Politician: this.candidate.professions.Politician,
+            Academic: this.candidate.professions.Academic,
+            STEM: this.candidate.professions.STEM
+          },
+          ethnicities: {
+            White: this.candidate.ethnicities.White,
+            Hispanic: this.candidate.ethnicities.Hispanic,
+            "East Asian": this.candidate.ethnicities['East Asian'],
+            "South Asian": this.candidate.ethnicities['South Asian'],
+            "African American": this.candidate.ethnicities['African American'],
+            Mixed: this.candidate.ethnicities.Mixed
+          }
+        })
+      })
+        .then(a => {
+          console.log(a)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    }
   }
 })
 
