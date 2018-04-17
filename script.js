@@ -76,7 +76,7 @@ Vue.component('candidate-card', {
     }
   },
   template: `
-  <div class="card" @click="cardClicked">
+  <div class="card">
   <div class="card-image">
     <figure class="image is-4by3">
       <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
@@ -95,6 +95,8 @@ Vue.component('candidate-card', {
       <p><span>Professions:</span> {{this.showProfessions()}}</p>
       <a :href="candidate.candidate.website">{{candidate.candidate.website}}</a> 
     </div>
+    <button class="button is-primary" @click="showMore">Show More</button>
+    <button class="button is-warning" @click="editCard">Edit</button>
   </div>
   </div>
   `,
@@ -105,8 +107,11 @@ Vue.component('candidate-card', {
     showProfessions () {
       return _.keys(_.pickBy(this.professions)).toString()
     },
-    cardClicked (event) {
-      Event.$emit('cardClicked', this.candidate.candidate)
+    showMore (event) {
+      Event.$emit('showMore', this.candidate.candidate)
+    },
+    editCard () {
+      Event.$emit('editCard', this.candidate.candidate)
     }
   },
   computed: {
@@ -161,8 +166,6 @@ Vue.component('modal', {
       </div class="content">
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success">Save changes</button>
-      <button class="button">Cancel</button>
     </footer>
   </div>
   </div>
@@ -174,7 +177,7 @@ Vue.component('modal', {
     }
   },
   created () {
-    Event.$on('cardClicked', candidate => {
+    Event.$on('showMore', candidate => {
       this.showCandidateModal = true
       this.candidate = candidate
     })
