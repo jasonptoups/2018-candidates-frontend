@@ -13,7 +13,7 @@
       <div class="tabs">
           <ul>
             <li class="is-active"><a>All Candidates</a></li>
-            <li><a>Your candidates</a></li>
+            <li><a @click="newModal">Add a Candidate</a></li>
           </ul>
         </div>
         <div class="columns">
@@ -28,6 +28,7 @@
         </div>
         <more-modal></more-modal>
         <edit-modal></edit-modal>
+        <new-modal></new-modal>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
