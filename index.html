@@ -22,7 +22,11 @@
             </filter-bar>
           </div>
           <div class="flex-wrap">
+            All: 
             <candidate-card v-for="candidate in candidates" :candidate="{candidate}">
+            </candidate-card>
+            Filtered: 
+            <candidate-card v-for="candidate in filteredCandidates" :candidate="{candidate}">
             </candidate-card>
           </div>
         </div>

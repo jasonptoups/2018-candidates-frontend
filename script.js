@@ -1,5 +1,13 @@
 window.Event = new Vue()
 
+class Filters {
+  constructor () {
+    this.gender = []
+  }
+}
+
+let filters = new Filters()
+
 Vue.component('filter-bar', {
   template: `
   <aside class="menu">
@@ -52,7 +60,7 @@ Vue.component('filter-header', {
 
 Vue.component('filter-item', {
   template: `
-  <li><a :class="{'is-active': clicked }" @click.prevent="isClicked">
+  <li><a :class="{'is-active': clicked }" @click.prevent="genderClicked">
     <slot></slot>
   </a></li>
   `,
@@ -62,9 +70,19 @@ Vue.component('filter-item', {
     }
   },
   methods: {
-    isClicked: function (event) {
+    genderClicked (event) {
+      this.isClicked()
+      this.addGender(event)
+    },
+    isClicked (event) {
       this.clicked = !this.clicked
-      Event.$emit('applied', event.target.innerText)
+    },
+    search (a, array) {
+      return array.indexOf(a) > -1
+    },
+    addGender (event) {
+      this.search(event.target.innerText, filters.gender) ? _.pull(filters.gender, event.target.innerText) : filters.gender.push(event.target.innerText)
+      Event.$emit('filterAdded')
     }
   }
 })
@@ -476,15 +494,13 @@ Vue.component('new-modal', {
   }
 })
 
-let filter = []
-
 var app = new Vue({
   el: '#root',
   data() {
     return {
       candidates: [],
       url: 'http://localhost:4000/api/candidates',
-      genderFilters: [],
+      filteredCandidates: []
     }
   },
   beforeMount:
@@ -495,59 +511,30 @@ var app = new Vue({
         })
     },
   created () {
-    Event.$on('applied', $event => {
-      if (filter.indexOf($event) > -1) {
-        _.pull(filter, $event)
-        this.genderFilter()
-        console.log(filter)
-      } else {
-        filter.push($event)
-        this.genderFilter()
-        console.log(filter)
-      }
-    }),
     Event.$on('refresh', _ => {
       fetch(this.url).then(res => res.json())
         .then(res => {
           this.candidates = res
         })
     })
+    Event.$on('filterAdded', _ => {
+      this.genderFilter()
+    })
   },
   methods: {
-    genderFilter() {
-      this.genderFilters = []
-      if (filter.indexOf('Male') > -1 && filter.indexOf('Female') > -1) {
-        this.genderFilters.push('Male')
-        this.genderFilters.push('Female')
-      } else if (filter.indexOf('Male') > -1) {
-        this.genderFilters.push('Male')
-      } else if (filter.indexOf('Female') > -1) {
-        this.genderFilters.push('Female')
-      }
-    },
     newModal () {
       Event.$emit('newModal')
     },
+    genderFilter () {
+      this.filteredCandidates = []
+      for (let i = 0; i < filters.gender.length; i++) {
+        let item = filters.gender[i]
+        let add = this.candidates.filter(candidate => candidate.gender === item)
+        this.filteredCandidates.push(...add)
+      }
+      console.log(this.filteredCandidates)
+    }
   },
   computed: {
-    maleCandidates () {
-      return this.candidates.filter(candidate => candidate.gender === "Male")
-    },
-    genderFilteredCandidates () {
-      for (let i = 0; i < this.genderFilters.length; i++) {
-        return this.candidates.filter(candidate => candidate.gender === this.genderFilters[i])
-      }
-    },
-    otherFilter () {
-      return this.candidates.filter(candidate => candidate.gender === this.genderFilter[0] || candidate.gender === this.genderFilter[1])
-    },
-    femaleCandidates () {
-      return this.candidates.filter(candidate => candidate.gender === "Female")
-    },
-    allCandidates () {
-      return (this.femaleCandidates || this.femaleCandidates)
-    }
   }
 })
-
-
