@@ -190,7 +190,7 @@ Vue.component('edit-modal', {
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">{{this.candidate.name}}</p>
+      <p class="modal-card-title">Edit {{this.candidate.name}}</p>
       <button class="delete" aria-label="close" @click="showEditModal = false"></button>
     </header>
     <section class="modal-card-body">
@@ -202,57 +202,57 @@ Vue.component('edit-modal', {
       <form>
         <label class="label">Name: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.name">
+          <input class="input" type="text" v-model="candidate.name">
         </div>
         <label class="label">Bio: </label>
         <div class="control">
-          <textarea class="textarea" v-model="this.candidate.bio"></textarea>
+          <textarea class="textarea" v-model="candidate.bio"></textarea>
         </div>
         <label class="label">Website: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.website">
+          <input class="input" type="text" v-model="candidate.website">
         </div>
         <label class="label">State: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.state">
+          <input class="input" type="text" v-model="candidate.state">
         </div>
         <label class="label">District: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.district">
+          <input class="input" type="text" v-model="candidate.district">
         </div>
         <label class="label">Age: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.age">
+          <input class="input" type="text" v-model="candidate.age">
         </div>
         <label class="label">Gender: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.gender">
+          <input class="input" type="text" v-model="candidate.gender">
         </div>
         <label class="label">Sexuality: </label>
         <div class="control">
-          <input class="input" type="text" v-model="this.candidate.sexuality">
+          <input class="input" type="text" v-model="candidate.sexuality">
         </div>
         <label class="label">Professions:</label>
-          <div><span>Educator: </span><input type="checkbox" v-model="this.candidate.professions.Educator"></div>
-          <div><span>Veteran: </span><input type="checkbox" v-model="this.candidate.professions.Veteran"></div>
-          <div><span>Law: </span><input type="checkbox" v-model="this.candidate.professions.Law"></div>
-          <div><span>Public Servant: </span><input type="checkbox" v-model="this.candidate.professions['Public Servant']"></div>
-          <div><span>Politician: </span><input type="checkbox" v-model="this.candidate.professions.Politician"></div>
-          <div><span>Business: </span><input type="checkbox" v-model="this.candidate.professions.Business"></div>
-          <div><span>Academic: </span><input type="checkbox" v-model="this.candidate.professions.Academic"></div>
-          <div><span>STEM: </span><input type="checkbox" v-model="this.candidate.professions.STEM"></div>
+          <div><span>Educator: </span><input type="checkbox" v-model="candidate.professions.Educator"></div>
+          <div><span>Veteran: </span><input type="checkbox" v-model="candidate.professions.Veteran"></div>
+          <div><span>Law: </span><input type="checkbox" v-model="candidate.professions.Law"></div>
+          <div><span>Public Servant: </span><input type="checkbox" v-model="candidate.professions['Public Servant']"></div>
+          <div><span>Politician: </span><input type="checkbox" v-model="candidate.professions.Politician"></div>
+          <div><span>Business: </span><input type="checkbox" v-model="candidate.professions.Business"></div>
+          <div><span>Academic: </span><input type="checkbox" v-model="candidate.professions.Academic"></div>
+          <div><span>STEM: </span><input type="checkbox" v-model="candidate.professions.STEM"></div>
         <label class="label">Ethnicities:</label>
-          <div><span>White: </span><input type="checkbox" v-model="this.candidate.ethnicities.White"></div>
-          <div><span>Hispanic: </span><input type="checkbox" v-model="this.candidate.ethnicities.Hispanic"></div>
-          <div><span>East Asian: </span><input type="checkbox" v-model="this.candidate.ethnicities['East Asian']"></div>
-          <div><span>South Asian: </span><input type="checkbox" v-model="this.candidate.ethnicities['South Asian']"></div>
-          <div><span>African American: </span><input type="checkbox" v-model="this.candidate.ethnicities['African American']"></div>
-          <div><span>Mixed: </span><input type="checkbox" v-model="this.candidate.ethnicities.Mixed"></div>
+          <div><span>White: </span><input type="checkbox" v-model="candidate.ethnicities.White"></div>
+          <div><span>Hispanic: </span><input type="checkbox" v-model="candidate.ethnicities.Hispanic"></div>
+          <div><span>East Asian: </span><input type="checkbox" v-model="candidate.ethnicities['East Asian']"></div>
+          <div><span>South Asian: </span><input type="checkbox" v-model="candidate.ethnicities['South Asian']"></div>
+          <div><span>African American: </span><input type="checkbox" v-model="candidate.ethnicities['African American']"></div>
+          <div><span>Mixed: </span><input type="checkbox" v-model="candidate.ethnicities.Mixed"></div>
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success" @click="updateCandidate()">Save changes</button>
-      <button class="button">Cancel</button>
+      <button class="button is-success" type="submit" @click="updateCandidate">Save changes</button>
+      <button class="button" @click="showEditModal = false">Cancel</button>
       <button class="button is-danger" @click="deleteCandidate">Delete Candidate</button>
     </footer>
   </div>
@@ -311,8 +311,9 @@ Vue.component('edit-modal', {
           }
         })
       })
-        .then(a => {
-          console.log(a)
+        .then(_ => {
+          this.showEditModal = false
+          Event.$emit('refresh')
         })
         .catch(err => {
           console.error(err)
@@ -323,6 +324,10 @@ Vue.component('edit-modal', {
       fetch(this.candidateURL, {
         method: 'DELETE'
       })
+        .then(_ => {
+          this.showEditModal = false
+          Event.$emit('refresh')
+        })
     }
   }
 })
@@ -463,9 +468,9 @@ Vue.component('new-modal', {
           }
         })
       })
-        .then(res => {
-          console.log(res)
+        .then(_ => {
           this.showNewModal = false
+          Event.$emit('refresh')
         })
     }
   }
@@ -500,6 +505,12 @@ var app = new Vue({
         this.genderFilter()
         console.log(filter)
       }
+    }),
+    Event.$on('refresh', _ => {
+      fetch(this.url).then(res => res.json())
+        .then(res => {
+          this.candidates = res
+        })
     })
   },
   methods: {
