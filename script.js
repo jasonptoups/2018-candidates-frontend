@@ -184,7 +184,6 @@ Vue.component('more-modal', {
         <h1>Statistics</h1>
         <p>Website: <a :href="this.candidate.website">{{this.candidate.website}}</a></p>
         <p>District: {{this.candidate.state}} - {{this.candidate.district}}</p>
-        <p>Age: {{this.candidate.age}}</p>
         <p>Gender: {{this.candidate.gender}}</p>
         <p>Sexuality: {{this.candidate.sexuality}}</p>
         <dt>Professions</dt>
@@ -262,10 +261,6 @@ Vue.component('edit-modal', {
         <label class="label">District: </label>
         <div class="control">
           <input class="input" type="text" v-model="candidate.district">
-        </div>
-        <label class="label">Age: </label>
-        <div class="control">
-          <input class="input" type="text" v-model="candidate.age">
         </div>
         <label class="label">Gender: </label>
         <div class="control">
@@ -393,6 +388,10 @@ Vue.component('new-modal', {
     <div class="control">
       <input class="input" type="text" v-model="name">
     </div>
+    <label class="label">Image Source: </label>
+    <div class="control">
+      <input class="input" type="text" v-model="image">
+    </div>
     <label class="label">Bio: </label>
     <div class="control">
       <textarea class="textarea" v-model="bio"></textarea>
@@ -408,10 +407,6 @@ Vue.component('new-modal', {
     <label class="label">District: </label>
     <div class="control">
       <input class="input" type="text" v-model="district">
-    </div>
-    <label class="label">Age: </label>
-    <div class="control">
-      <input class="input" type="text" v-model="age">
     </div>
     <label class="label">Gender: </label>
     <div class="control">
@@ -456,6 +451,7 @@ Vue.component('new-modal', {
       url: 'http://candidates-2018.herokuapp.com/api/candidates/',
       name: '',
       bio: '',
+      image: 'http://',
       website: 'http://',
       state: '',
       district: '',
