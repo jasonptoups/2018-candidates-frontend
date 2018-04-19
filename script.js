@@ -3,6 +3,9 @@ window.Event = new Vue()
 class Filters {
   constructor () {
     this.gender = []
+    this.profession = []
+    this.ethnicity = []
+    this.sexuality = []
   }
 }
 
@@ -11,58 +14,48 @@ let filters = new Filters()
 Vue.component('filter-bar', {
   template: `
   <aside class="menu">
-  <filter-header>Gender</filter-header>
+    <p class="menu-label">Gender</p>
     <ul class="menu-list">
       <filter-item>Male</filter-item>
       <filter-item>Female</filter-item>
     </ul>
-  <filter-header>Ethnicity</filter-header>
+    <p class="menu-label">Professions</p>
     <ul class="menu-list">
+      <filter-item>Educator</filter-item>
+      <filter-item>Veteran</filter-item>
+      <filter-item>Law</filter-item>
+      <filter-item>Public Servant</filter-item>
+      <filter-item>Business</filter-item>
+      <filter-item>Politician</filter-item>
+      <filter-item>Academic</filter-item>
+      <filter-item>STEM</filter-item>
+    </ul>  
+    <p class="menu-label">Ethnicity</p>
+      <ul class="menu-list">
       <filter-item>White</filter-item>
       <filter-item>Hispanic</filter-item>
-      <filter-item>East Asian / Pacific Islander</filter-item>
+      <filter-item>East Asian</filter-item>
       <filter-item>South Asian</filter-item>
       <filter-item>African American</filter-item>
       <filter-item>Mixed</filter-item>
     </ul>
-  <filter-header>Sexuality</filter-header>
-  <ul class="menu-list">
-    <filter-item>Gay</filter-item>
+    <p class="menu-label">Sexuality</p>
+    <ul class="menu-list">
+    <filter-item>LGBT</filter-item>
     <filter-item>Straight</filter-item>
   </ul>
-  <filter-header>Professions</filter-header>
-  <ul class="menu-list">
-    <filter-item>Educator</filter-item>
-    <filter-item>Veteran</filter-item>
-    <filter-item>Politician</filter-item>
-    <filter-item>Public Servant</filter-item>
-    <filter-item>Business</filter-item>
-    <filter-item>Experienced Politician</filter-item>
-    <filter-item>Academics</filter-item>
-    <filter-item>STEM</filter-item>
-  </ul>
-  <filter-header>Appearance</filter-header>
-    <ul class="menu-list">
-    <filter-item>Hot</filter-item>
-    <filter-item>Not</filter-item>
-    </ul>
   </aside>
-  `
-})
-
-Vue.component('filter-header', {
-  template: `
-  <p class="menu-label">
-    <slot></slot>
-  </p>
-  `
+  `,
+  methods: {
+    filterClicked (e) {
+      console.log('clicked')
+    }
+  }
 })
 
 Vue.component('filter-item', {
   template: `
-  <li><a :class="{'is-active': clicked }" @click.prevent="genderClicked">
-    <slot></slot>
-  </a></li>
+  <li><a :class="{'is-active': clicked }" @click.prevent="filterClicked"><slot></slot></a></li>
   `,
   data () {
     return {
@@ -70,18 +63,43 @@ Vue.component('filter-item', {
     }
   },
   methods: {
-    genderClicked (event) {
+    // add to the filter object
+    filterClicked (event) {
+      let text = event.target.innerText
       this.isClicked()
-      this.addGender(event)
+      if (text === 'Male' || text === 'Female') {
+        this.addGender(event)
+      } else if (text === 'Educator' || text === 'Veteran' || text === 'Law' || text === 'Public Servant' || text === 'Business' || text === 'Politician' || text === 'Academic' || text === 'STEM' ) {
+        this.addProfession(text)
+      } else if (text === 'White' || text === 'Hispanic' || text === 'East Asian' || text === 'South Asian' || text === 'African American' || text === 'Mixed') {
+        this.addEthnicity(text)
+      } else if (text === 'LGBT' || text === 'Straight') {
+        this.addSexuality(text)
+      }
     },
+    // toggle filter selected appearance
     isClicked (event) {
       this.clicked = !this.clicked
     },
+    // see if a filter is already in an array of filters
     search (a, array) {
       return array.indexOf(a) > -1
     },
+    // check if a filter is in the filter object. If it is, remove it. If not, add it.
     addGender (event) {
       this.search(event.target.innerText, filters.gender) ? _.pull(filters.gender, event.target.innerText) : filters.gender.push(event.target.innerText)
+      Event.$emit('filterAdded')
+    },
+    addProfession (text) {
+      this.search(text, filters.profession) ? _.pull(filters.profession, text) : filters.profession.push(text)
+      Event.$emit('filterAdded')
+    },
+    addEthnicity (text) {
+      this.search(text, filters.ethnicity) ? _.pull(filters.ethnicity, text) : filters.ethnicity.push(text)
+      Event.$emit('filterAdded')
+    },
+    addSexuality (text) {
+      this.search(text, filters.sexuality) ? _.pull(filters.sexuality, text) : filters.sexuality.push(text)
       Event.$emit('filterAdded')
     }
   }
@@ -96,8 +114,8 @@ Vue.component('candidate-card', {
   template: `
   <div class="card">
   <div class="card-image">
-    <figure class="image is-4by3">
-      <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+    <figure class="image is-200by300 max-height">
+      <img :src="candidate.candidate.image" :alt="candidate.candidate.name">
     </figure>
   </div>
   <div class="card-content">
@@ -119,15 +137,19 @@ Vue.component('candidate-card', {
   </div>
   `,
   methods: {
+    // Create the list of ethnicities that are True
     showEthnicity () {
-      return _.keys(_.pickBy(this.ethnicities)).toString()
+      return _.keys(_.pickBy(this.ethnicities)).join(', ')
     },
+    // create the list of professions that are True
     showProfessions () {
-      return _.keys(_.pickBy(this.professions)).toString()
+      return _.keys(_.pickBy(this.professions)).join(', ')
     },
+    // launch the showMore modal
     showMore (event) {
       Event.$emit('showMore', this.candidate.candidate)
     },
+    // launch the Edit modal
     editCard () {
       Event.$emit('editCard', this.candidate.candidate)
     }
@@ -280,14 +302,15 @@ Vue.component('edit-modal', {
     return {
       showEditModal: false,
       candidate: {},
-      url: 'http://localhost:4000/api/candidates/',
+      url: 'http://localhost:4000/api/candidates/'
     }
   },
   computed: {
-    candidateURL() {
+    candidateURL () {
       return this.url + this.candidate._id
     }
   },
+  // listen for the editCard event
   created () {
     Event.$on('editCard', candidate => {
       this.showEditModal = true
@@ -295,6 +318,7 @@ Vue.component('edit-modal', {
     })
   },
   methods: {
+    // make a PUT request to the database
     updateCandidate () {
       fetch(this.candidateURL, {
         method: 'PUT',
@@ -322,9 +346,9 @@ Vue.component('edit-modal', {
           ethnicities: {
             White: this.candidate.ethnicities.White,
             Hispanic: this.candidate.ethnicities.Hispanic,
-            "East Asian": this.candidate.ethnicities['East Asian'],
-            "South Asian": this.candidate.ethnicities['South Asian'],
-            "African American": this.candidate.ethnicities['African American'],
+            'East Asian': this.candidate.ethnicities['East Asian'],
+            'South Asian': this.candidate.ethnicities['South Asian'],
+            'African American': this.candidate.ethnicities['African American'],
             Mixed: this.candidate.ethnicities.Mixed
           }
         })
@@ -408,10 +432,15 @@ Vue.component('new-modal', {
     <div><span>South Asian: </span><input type="checkbox" v-model="southasian"></div>
     <div><span>African American: </span><input type="checkbox" v-model="africanamerican"></div>
     <div><span>Mixed: </span><input type="checkbox" v-model="mixed"></div>
-
     </section>
     <footer class="modal-card-foot">
       <button class="button is-success" type="submit" @click="addCandidate">Save changes</button>
+      <p v-if="errors.length">
+        <b>Please correct the following error(s):</b>
+        <ul>
+          <li v-for="error in errors">{{ error }}</li>
+        </ul>
+      </p>
     </footer>
   </div>
   </div>
@@ -441,7 +470,8 @@ Vue.component('new-modal', {
       eastasian: false,
       southasian: false,
       africanamerican: false,
-      mixed: false
+      mixed: false,
+      errors: []
     }
   },
   created() {
@@ -450,7 +480,17 @@ Vue.component('new-modal', {
     })
   },
   methods: {
+    checkForm (event) {
+      this.errors = []
+      if (this.name === '') this.errors.push('Name required')
+      if (this.bio === '') this.errors.push('Bio required')
+      if (this.state === '') this.errors.push('State required')
+      if (this.district === '') this.errors.push('District required')
+      if (this.gender === '') this.errors.push('Gender required')
+    },
     addCandidate (event) {
+      this.checkForm(event)
+      if (this.errors !== []) return
       console.log(this.name)
       fetch(this.url, {
         method: 'POST',
@@ -470,7 +510,7 @@ Vue.component('new-modal', {
             Educator: this.educator,
             Veteran: this.veteran,
             Law: this.law,
-            "Public Servant": this.publicservant,
+            'Public Servant': this.publicservant,
             Politician: this.politician,
             Business: this.business,
             Academic: this.academic,
@@ -479,9 +519,9 @@ Vue.component('new-modal', {
           ethnicities: {
             White: this.white,
             Hispanic: this.hispanic,
-            "East Asian": this.eastasian,
-            "South Asian": this.southasian,
-            "African American": this.africanamerican,
+            'East Asian': this.eastasian,
+            'South Asian': this.southasian,
+            'African American': this.africanamerican,
             Mixed: this.mixed
           }
         })
@@ -500,7 +540,11 @@ var app = new Vue({
     return {
       candidates: [],
       url: 'http://localhost:4000/api/candidates',
-      filteredCandidates: []
+      firstFilter: [],
+      secondFilter: [],
+      thirdFilter: [],
+      fourthFilter: [],
+      showAll: true
     }
   },
   beforeMount:
@@ -518,23 +562,40 @@ var app = new Vue({
         })
     })
     Event.$on('filterAdded', _ => {
-      this.genderFilter()
+      this.applyFilter()
     })
   },
   methods: {
     newModal () {
       Event.$emit('newModal')
     },
-    genderFilter () {
-      this.filteredCandidates = []
+    applyFilter () {
+      filters.gender.length === 0 ? this.firstFilter = this.candidates : this.firstFilter = []
       for (let i = 0; i < filters.gender.length; i++) {
-        let item = filters.gender[i]
-        let add = this.candidates.filter(candidate => candidate.gender === item)
-        this.filteredCandidates.push(...add)
+        let targetGender = filters.gender[i]
+        let add = this.candidates.filter(candidate => candidate.gender === targetGender)
+        this.firstFilter.push(...add)
       }
-      console.log(this.filteredCandidates)
+      filters.profession.length === 0 ? this.secondFilter = this.firstFilter : this.secondFilter = []
+      for (let i = 0; i < filters.profession.length; i++) {
+        let targetProfession = filters.profession[i]
+        let add = this.firstFilter.filter(candidate => candidate.professions[targetProfession] === true)
+        this.secondFilter.push(...add)
+      }
+      filters.ethnicity.length === 0 ? this.thirdFilter = this.secondFilter : this.thirdFilter = []
+      for (let i = 0; i < filters.ethnicity.length; i++) {
+        let targetEthnicity = filters.ethnicity[i]
+        let add = this.secondFilter.filter(candidate => candidate.ethnicities[targetEthnicity] === true)
+        this.thirdFilter.push(...add)
+      }
+      filters.sexuality.length === 0 ? this.fourthFilter = this.thirdFilter : this.fourthFilter = []
+      for (let i = 0; i < filters.sexuality.length; i++) {
+        let targetSexuality = filters.sexuality[i]
+        let add = this.thirdFilter.filter(candidate => candidate.sexuality === targetSexuality)
+        this.fourthFilter.push(...add)
+      }
+      this.fourthFilter = _.uniqWith(this.fourthFilter, _.isEqual)
+      this.firstFilter.length === 0 && this.secondFilter.length === 0 && this.thirdFilter.length === 0 && this.fourthFilter.length === 0 ? this.showAll = true : this.showAll = false
     }
-  },
-  computed: {
   }
 })

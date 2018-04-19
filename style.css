@@ -1,5 +1,4 @@
 body {
-  padding: 20px 30px;
 }
 
 .flex-wrap {
@@ -11,5 +10,16 @@ body {
 .card {
   width: 350px;
   margin: 10px 10px;
-  height: 625px;
+  height: 650px;
+}
+
+.max-height {
+  height: 300px;
+  width: 200px;
+  margin: 0 auto;
+  padding-top: 1px;
+}
+
+.padding-left {
+  padding-left: 20px
 }

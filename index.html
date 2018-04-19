@@ -9,24 +9,36 @@
   <title>2018 Candidates</title>
 </head>
 <body>
+  <header>
+      <section class="hero is-primary is-bold">
+          <div class="hero-body">
+            <div class="container">
+              <h1 class="title">
+                2018 Democratic Candidate Explorer
+              </h1>
+              <h2 class="subtitle">
+                Pennsylvania and Virginia
+              </h2>
+            </div>
+          </div>
+        </section>        
+  </header>
   <div id="root">
       <div class="tabs">
-          <ul>
+          <ul class="padding-left">
             <li class="is-active"><a>All Candidates</a></li>
             <li><a @click="newModal">Add a Candidate</a></li>
           </ul>
         </div>
         <div class="columns">
           <div class="column is-one-fifth">
-            <filter-bar>
+            <filter-bar class="padding-left">
             </filter-bar>
           </div>
           <div class="flex-wrap">
-            All: 
-            <candidate-card v-for="candidate in candidates" :candidate="{candidate}">
+            <candidate-card v-for="candidate in candidates" v-show="showAll" :candidate="{candidate}">
             </candidate-card>
-            Filtered: 
-            <candidate-card v-for="candidate in filteredCandidates" :candidate="{candidate}">
+            <candidate-card v-for="candidate in fourthFilter" :candidate="{candidate}">
             </candidate-card>
           </div>
         </div>
