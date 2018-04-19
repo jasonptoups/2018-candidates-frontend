@@ -478,63 +478,48 @@ Vue.component('new-modal', {
   created() {
     Event.$on('newModal', _ => {
       this.showNewModal = true
-      this.errors = []
     })
   },
   methods: {
-    // make sure required fields are filled in
-    // checkForm (event) {
-    //   if (this.name === '') this.errors.push('Name required')
-    //   if (this.bio === '') this.errors.push('Bio required')
-    //   if (this.state === '') this.errors.push('State required')
-    //   if (this.district === '') this.errors.push('District required')
-    //   if (this.gender === '') this.errors.push('Gender required')
-    // },
     addCandidate (event) {
-      // this.errors = []
-      // this.checkForm(event)
-      // if (this.errors !== []) {
-      //   return
-      // } else {
-        fetch(this.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
+      fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.name,
+          bio: this.bio,
+          website: this.website,
+          state: this.state,
+          district: this.district,
+          age: this.age,
+          gender: this.gender,
+          sexuality: this.sexuality,
+          professions: {
+            Educator: this.educator,
+            Veteran: this.veteran,
+            Law: this.law,
+            'Public Servant': this.publicservant,
+            Politician: this.politician,
+            Business: this.business,
+            Academic: this.academic,
+            STEM: this.stem
           },
-          body: JSON.stringify({
-            name: this.name,
-            bio: this.bio,
-            website: this.website,
-            state: this.state,
-            district: this.district,
-            age: this.age,
-            gender: this.gender,
-            sexuality: this.sexuality,
-            professions: {
-              Educator: this.educator,
-              Veteran: this.veteran,
-              Law: this.law,
-              'Public Servant': this.publicservant,
-              Politician: this.politician,
-              Business: this.business,
-              Academic: this.academic,
-              STEM: this.stem
-            },
-            ethnicities: {
-              White: this.white,
-              Hispanic: this.hispanic,
-              'East Asian': this.eastasian,
-              'South Asian': this.southasian,
-              'African American': this.africanamerican,
-              Mixed: this.mixed
-            }
-          })
+          ethnicities: {
+            White: this.white,
+            Hispanic: this.hispanic,
+            'East Asian': this.eastasian,
+            'South Asian': this.southasian,
+            'African American': this.africanamerican,
+            Mixed: this.mixed
+          }
         })
-          .then(_ => {
-            this.showNewModal = false
-            Event.$emit('refresh')
-          })
-      // }
+      })
+        .then(_ => {
+          this.showNewModal = false
+          Event.$emit('refresh')
+        })
     }
   }
 })
