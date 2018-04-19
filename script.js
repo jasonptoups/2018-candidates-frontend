@@ -554,13 +554,13 @@ var app = new Vue({
     }
   },
   // before loading, run the API get request for the first time
-  // mounted:
-  //   function () {
-  //     fetch(this.url).then(res => res.json())
-  //       .then(res => {
-  //         this.candidates = res
-  //       })
-  //   },
+  mounted:
+    function () {
+      fetch(this.url).then(res => res.json())
+        .then(res => {
+          this.candidates = res
+        })
+    },
   created () {
     // after any changes are made, re-call the API
     Event.$on('refresh', _ => {
@@ -573,10 +573,6 @@ var app = new Vue({
     Event.$on('filterAdded', _ => {
       this.applyFilter()
     })
-    fetch(this.url).then(res => res.json())
-      .then(res => {
-        this.candidates = res
-      })
   },
   methods: {
     newModal () {
