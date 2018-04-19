@@ -305,7 +305,7 @@ Vue.component('edit-modal', {
     return {
       showEditModal: false,
       candidate: {},
-      url: 'http://localhost:4000/api/candidates/'
+      url: 'http://candidates-2018.herokuapp.com/api/candidates/'
     }
   },
   computed: {
@@ -453,7 +453,7 @@ Vue.component('new-modal', {
   data() {
     return {
       showNewModal: false,
-      url: 'http://localhost:4000/api/candidates/',
+      url: 'http://candidates-2018.herokuapp.com/api/candidates/',
       name: '',
       bio: '',
       website: 'http://',
@@ -547,7 +547,7 @@ var app = new Vue({
   data() {
     return {
       candidates: [],
-      url: 'http://localhost:4000/api/candidates',
+      url: 'http://candidates-2018.herokuapp.com/api/candidates/',
       firstFilter: [],
       secondFilter: [],
       thirdFilter: [],
