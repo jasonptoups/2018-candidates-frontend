@@ -114,7 +114,7 @@ Vue.component('candidate-card', {
   template: `
   <div class="card">
   <div class="card-image">
-    <figure class="image is-200by300 max-height">
+    <figure class="image is-200by300 image-resize">
       <img :src="candidate.candidate.image" :alt="candidate.candidate.name">
     </figure>
   </div>
@@ -127,7 +127,6 @@ Vue.component('candidate-card', {
     <div class="content">
       <p><span>Gender:</span> {{candidate.candidate.gender}}</p>
       <p><span>Ethnicity:</span> {{this.showEthnicity()}}</p>
-      <p><span>Sexuality:</span> {{candidate.candidate.sexuality}}</p>
       <p><span>Professions:</span> {{this.showProfessions()}}</p>
       <a :href="candidate.candidate.website">{{candidate.candidate.website}}</a> 
     </div>
@@ -175,8 +174,8 @@ Vue.component('more-modal', {
     </header>
     <section class="modal-card-body">
       <div class="card-image">
-        <figure class="image is-4by3">
-          <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+        <figure class="image is-2by3">
+          <img :src="this.candidate.image" :alt="this.candidate.name">
         </figure>
       </div>
       <div class="content">
@@ -235,14 +234,18 @@ Vue.component('edit-modal', {
     </header>
     <section class="modal-card-body">
       <div class="card-image">
-        <figure class="image is-4by3">
-          <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+        <figure class="image is-2by3">
+          <img :src="this.candidate.image" :alt="this.candidate.name">
         </figure>
       </div>
       <form>
         <label class="label">Name: </label>
         <div class="control">
           <input class="input" type="text" v-model="candidate.name">
+        </div>
+        <label class="label">Image Source: </label>
+        <div class="control">
+          <input class="input" type="text" v-model="candidate.image">
         </div>
         <label class="label">Bio: </label>
         <div class="control">
@@ -327,6 +330,7 @@ Vue.component('edit-modal', {
         },
         body: JSON.stringify({
           name: this.candidate.name,
+          image: this.candidate.image,
           state: this.candidate.state,
           district: this.candidate.district,
           age: this.candidate.age,
@@ -361,6 +365,7 @@ Vue.component('edit-modal', {
           console.error(err)
         })
     },
+    // make Delete request to the database
     deleteCandidate () {
       console.log('delete attempted')
       fetch(this.candidateURL, {
@@ -477,18 +482,21 @@ Vue.component('new-modal', {
   created() {
     Event.$on('newModal', _ => {
       this.showNewModal = true
+      this.errors = []
     })
   },
   methods: {
+    // make sure required fields are filled in
     checkForm (event) {
-      this.errors = []
       if (this.name === '') this.errors.push('Name required')
       if (this.bio === '') this.errors.push('Bio required')
       if (this.state === '') this.errors.push('State required')
       if (this.district === '') this.errors.push('District required')
       if (this.gender === '') this.errors.push('Gender required')
     },
+    // run the checkForm event and if it passes then run the post request
     addCandidate (event) {
+      this.errors = []
       this.checkForm(event)
       if (this.errors !== []) return
       console.log(this.name)
@@ -547,6 +555,7 @@ var app = new Vue({
       showAll: true
     }
   },
+  // before loading, run the API get request for the first time
   beforeMount:
     function () {
       fetch(this.url).then(res => res.json())
@@ -555,12 +564,14 @@ var app = new Vue({
         })
     },
   created () {
+    // after any changes are made, re-call the API
     Event.$on('refresh', _ => {
       fetch(this.url).then(res => res.json())
         .then(res => {
           this.candidates = res
         })
     })
+    // Apply filter method is called
     Event.$on('filterAdded', _ => {
       this.applyFilter()
     })
@@ -569,6 +580,12 @@ var app = new Vue({
     newModal () {
       Event.$emit('newModal')
     },
+    // This method is complex and I need help figuring out how to DRY it up. 
+    // What it does is it starts with the first filter (gender). If no gender filters are selected, it outputs
+    // the entire candidates array. It then passes the filter results to the firstFilter
+    // the next filter starts with that firstFilter var and applies its filters on to it.
+    // One tricky thing is that the first and last filters search for exact word matches
+    // while the middle two filters loop through a set of keys to make sure it matches true or false.
     applyFilter () {
       filters.gender.length === 0 ? this.firstFilter = this.candidates : this.firstFilter = []
       for (let i = 0; i < filters.gender.length; i++) {

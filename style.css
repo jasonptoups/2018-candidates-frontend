@@ -10,10 +10,10 @@ body {
 .card {
   width: 350px;
   margin: 10px 10px;
-  height: 650px;
+  height: 625px;
 }
 
-.max-height {
+.image-resize {
   height: 300px;
   width: 200px;
   margin: 0 auto;
@@ -22,4 +22,10 @@ body {
 
 .padding-left {
   padding-left: 20px
+}
+
+.flag {
+  background-image: linear-gradient(to bottom, rgba(20,20,20,.4) 90%, rgba(255,255,255,1)), url("https://modernandhistoricalflags.files.wordpress.com/2012/09/cropped-us_flag_header.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
