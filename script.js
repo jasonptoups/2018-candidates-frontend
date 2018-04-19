@@ -489,6 +489,8 @@ Vue.component('new-modal', {
       if (this.state === '') this.errors.push('State required')
       if (this.district === '') this.errors.push('District required')
       if (this.gender === '') this.errors.push('Gender required')
+      if (this.gender !== 'Male' || this.gender !== 'Female') this.errors.push('Please use Male or Female for gender')
+      if (this.sexuality !== 'LGBT' || this.gender !== 'Straight') this.errors.push('Please use Straight or LGBT for sexuality')
     },
     // run the checkForm event and if it passes then run the post request
     addCandidate (event) {
