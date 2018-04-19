@@ -552,7 +552,7 @@ var app = new Vue({
     }
   },
   // before loading, run the API get request for the first time
-  beforeMount:
+  mounted:
     function () {
       fetch(this.url).then(res => res.json())
         .then(res => {
