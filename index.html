@@ -29,13 +29,14 @@
             <li class="is-active"><a>All Candidates</a></li>
             <li><a @click="newModal">Add a Candidate</a></li>
           </ul>
-        </div>
+      </div>
         <div class="columns">
           <div class="column is-one-fifth">
             <filter-bar class="padding-left">
             </filter-bar>
           </div>
           <div class="flex-wrap">
+            <p v-if="!candidates">Loading candidates, please wait</p>
             <candidate-card v-for="candidate in candidates" v-show="showAll" :candidate="{candidate}">
             </candidate-card>
             <candidate-card v-for="candidate in fourthFilter" :candidate="{candidate}">
