@@ -36,7 +36,7 @@
             </filter-bar>
           </div>
           <div class="flex-wrap">
-            <p v-if="!candidates">Loading candidates, please wait </p>
+            <p v-if="candidates.length < 1">Loading candidates, please wait </p>
             <candidate-card v-for="candidate in candidates" v-show="showAll" :candidate="{candidate}">
             </candidate-card>
             <candidate-card v-for="candidate in fourthFilter" :candidate="{candidate}">
