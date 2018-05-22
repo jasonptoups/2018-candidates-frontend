@@ -3,12 +3,13 @@ window.Event = new Vue()
 class Filters {
   constructor () {
     this.gender = []
-    this.profession = []
-    this.ethnicity = []
+    this.professions = []
+    this.ethnicities = []
     this.sexuality = []
   }
 }
 
+// I would probably use a traditional object for these since you aren't using any methods for this
 let filters = new Filters()
 
 Vue.component('filter-bar', {
@@ -66,10 +67,13 @@ Vue.component('filter-item', {
     // add to the filter object
     filterClicked (event) {
       let text = event.target.innerText
+      // I would clean this up a little bit:
+      // const genders = ['Male', 'Female']
+      // if (genders.includes(text)) -- I think it's a little more clear. You could also wrap them onto multiple lines so the lines aren't as long!
       this.isClicked()
       if (text === 'Male' || text === 'Female') {
         this.addGender(event)
-      } else if (text === 'Educator' || text === 'Veteran' || text === 'Law' || text === 'Public Servant' || text === 'Business' || text === 'Politician' || text === 'Academic' || text === 'STEM' ) {
+      } else if (text === 'Educator' || text === 'Veteran' || text === 'Law' || text === 'Public Servant' || text === 'Business' || text === 'Politician' || text === 'Academic' || text === 'STEM') {
         this.addProfession(text)
       } else if (text === 'White' || text === 'Hispanic' || text === 'East Asian' || text === 'South Asian' || text === 'African American' || text === 'Mixed') {
         this.addEthnicity(text)
@@ -91,11 +95,11 @@ Vue.component('filter-item', {
       Event.$emit('filterAdded')
     },
     addProfession (text) {
-      this.search(text, filters.profession) ? _.pull(filters.profession, text) : filters.profession.push(text)
+      this.search(text, filters.profession) ? _.pull(filters.profession, text) : filters.professions.push(text)
       Event.$emit('filterAdded')
     },
     addEthnicity (text) {
-      this.search(text, filters.ethnicity) ? _.pull(filters.ethnicity, text) : filters.ethnicity.push(text)
+      this.search(text, filters.ethnicities) ? _.pull(filters.ethnicities, text) : filters.ethnicities.push(text)
       Event.$emit('filterAdded')
     },
     addSexuality (text) {
@@ -445,7 +449,7 @@ Vue.component('new-modal', {
   </div>
   </div>
   `,
-  data() {
+  data () {
     return {
       showNewModal: false,
       url: 'https://candidates-2018.herokuapp.com/api/candidates/',
@@ -475,7 +479,7 @@ Vue.component('new-modal', {
       errors: []
     }
   },
-  created() {
+  created () {
     Event.$on('newModal', _ => {
       this.showNewModal = true
     })
@@ -526,7 +530,7 @@ Vue.component('new-modal', {
 
 var app = new Vue({
   el: '#root',
-  data() {
+  data () {
     return {
       candidates: [],
       url: 'https://candidates-2018.herokuapp.com/api/candidates/',
@@ -562,13 +566,32 @@ var app = new Vue({
     newModal () {
       Event.$emit('newModal')
     },
-    // This method is complex and I need help figuring out how to DRY it up. 
+    // This method is complex and I need help figuring out how to DRY it up.
     // What it does is it starts with the first filter (gender). If no gender filters are selected, it outputs
     // the entire candidates array. It then passes the filter results to the firstFilter
     // the next filter starts with that firstFilter var and applies its filters on to it.
     // One tricky thing is that the first and last filters search for exact word matches
     // while the middle two filters loop through a set of keys to make sure it matches true or false.
+    
+
+    // runFilter (filterName, filterValue) {
+    //   return this.candidates.filter(candidate => {
+    //     console.log(filterName, candidate[filterName])
+    //     return filterValue.includes(candidate[filterName])
+    //   })
+    // },
+
     applyFilter () {
+      /*
+      let filteredData = []
+      Object.keys(filters).forEach(filterKey => {
+        if (filters[filterKey].length > 0) filteredData.push(...this.runFilter(filterKey, filters[filterKey]))
+      })
+      */
+      // If your data was structured a little bit differently on the backend, then this something as simple as this would work! You could 
+      // structure the data to have an array of the attributes for each candidate instead of the booleans. i.e. professions: ['doctor', 'lawyer']
+      // I have another method above that would help with this as well -- runFilter
+
       filters.gender.length === 0 ? this.firstFilter = this.candidates : this.firstFilter = []
       for (let i = 0; i < filters.gender.length; i++) {
         let targetGender = filters.gender[i]
